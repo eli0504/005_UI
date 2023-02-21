@@ -6,12 +6,12 @@ public class Target : MonoBehaviour
 {
     public float lifeTime = 2f; //tiempo en el que desaparecerá el Target
     private GameManager gameManager;
-    public int points;
+    public int points; //puntos de los targets
     public GameObject explosionParticle;
     void Start()
     {
-        gameManager = FindObjectOfType<GameManager>();
-        Destroy(gameObject, lifeTime);
+        gameManager = FindObjectOfType<GameManager>(); //conexión target con GameManager
+        Destroy(gameObject, lifeTime); //autodestrucción
     }
 
     private void OnMouseDown() //detecta cuando hacemos click sobre el Target
@@ -20,7 +20,7 @@ public class Target : MonoBehaviour
         {
             if (gameObject.CompareTag("Bad")) //si hacemos click en una calavera morimos
             {
-                gameManager.isGameOver = true;
+                gameManager.GameOver();
             }else if (gameObject.CompareTag("Good"))
             {
                 gameManager.UpdateScore(points);

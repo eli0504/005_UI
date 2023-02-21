@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     //Script que dirige los hilos de todo el juego
 
-    public GameObject[] targetPrefabs;
+    public GameObject[] targetPrefabs; //array de objetos
 
     private float minX = -3.75f;
     private float minY = -3.75F;
@@ -17,17 +18,31 @@ public class GameManager : MonoBehaviour
 
     public bool isGameOver;
     public float spawnRate = 1f; //cada cuanto aparecen los objectos
-    public List<Vector3> targetPositionsInScene; //guarda las posiciones que estan ocupadas en la rejilla
+    public List<Vector3> targetPositionsInScene; //guarda las posiciones que estan ocupadas en la rejilla (LA LISTA ES FLEXIBLE)
     public Vector3 randomPos;
 
     public TextMeshProUGUI scoreText;
+    public GameObject gameOverPanel;
+
 
     //llamamos a la corrutina
     private void Start()
     {
         isGameOver = false;
         StartCoroutine("SpawnRandomTarget");
-        scoreText.text = $"Score:{score}";
+        scoreText.text = $"Score:{score}";  //cuando comienza el juego se muestra la puntuación
+        gameOverPanel.SetActive(false);
+    }
+
+    public void GameOver()
+    {
+        isGameOver = true;
+        gameOverPanel.SetActive(true); //el texto aparece cuando morimos
+    }
+
+    public void RestartGame() //RECARGA LA ESCENA ACTUAL
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     //Posición aleatoria en el centro de los cuadrados
@@ -39,12 +54,12 @@ public class GameManager : MonoBehaviour
         return new Vector3(spawnPosX, spawnPosY, 0);
     }
 
-    //corrutina para el spawner
+    //corrutina para el spawner (HACE APARECER OBJETOS)
     private IEnumerator SpawnRandomTarget() //instancia un objeto
     {
         while (!isGameOver) //mientras no estamos muertos
         {
-            yield return new WaitForSeconds(spawnRate); //esperamos ese tiempo
+            yield return new WaitForSeconds(spawnRate); //esperamos el tiempo que indica "spawnRate"
 
             int randomIndex = Random.Range(0, targetPrefabs.Length); //qué elemento hacemos aparecer
 
@@ -56,14 +71,14 @@ public class GameManager : MonoBehaviour
                 randomPos = RandomSpawnPosition();
             }
 
-            Instantiate(targetPrefabs[randomIndex], randomPos, targetPrefabs[randomIndex].transform.rotation);
+            Instantiate(targetPrefabs[randomIndex], randomPos, targetPrefabs[randomIndex].transform.rotation); //se instancia un objeto en una posición libre aleatoria
             targetPositionsInScene.Add(randomPos); //añadimos a la lista de posiciones ocupadas la nueva posición que ocupamos
         }
     }
 
-    public void UpdateScore(int newPoints)
+    public void UpdateScore(int newPoints) //función para ganar puntos
     {
-        score += newPoints;
+        score += newPoints; //nuevos puntos añadidos
         scoreText.text = $"Score: {score}";
     }
 
