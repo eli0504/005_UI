@@ -7,6 +7,7 @@ TagManager:
   - Bad
   - Sensor
   - Good
+  - Shield
   layers:
   - Default
   - TransparentFX

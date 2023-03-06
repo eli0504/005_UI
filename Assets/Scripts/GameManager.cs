@@ -14,23 +14,42 @@ public class GameManager : MonoBehaviour
     private float minY = -3.75F;
     private float distanceBetweenSquares = 2.5f;
 
-    private int score; //puntuación
+    private int lives = 3;
+
+    private int score; //puntuación total
+
+    private float spawnRate = 1f; //cada cuanto aparecen los objectos
+    private Vector3 randomPos;
 
     public bool isGameOver;
-    public float spawnRate = 1f; //cada cuanto aparecen los objectos
     public List<Vector3> targetPositionsInScene; //guarda las posiciones que estan ocupadas en la rejilla (LA LISTA ES FLEXIBLE)
-    public Vector3 randomPos;
 
     public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI livesText;
     public GameObject gameOverPanel;
+    public GameObject startGamePanel;
 
+    public bool hasPowerupShield;
 
-    //llamamos a la corrutina
     private void Start()
     {
+        startGamePanel.SetActive(true);
+        gameOverPanel.SetActive(false);
+    }
+    public void StartGame(int difficulty)
+    {
         isGameOver = false;
-        StartCoroutine("SpawnRandomTarget");
-        scoreText.text = $"Score:{score}";  //cuando comienza el juego se muestra la puntuación
+
+        score = 0;
+        UpdateScore(0);
+
+        lives = 3;
+        livesText.text = $"Lives: {lives}";
+        spawnRate /= difficulty; //cuanto más difícil más rápido aparecen los objetos
+
+        StartCoroutine(SpawnRandomTarget());
+
+        startGamePanel.SetActive(false);
         gameOverPanel.SetActive(false);
     }
 
@@ -42,7 +61,7 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame() //RECARGA LA ESCENA ACTUAL
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name); //lo reinicia todo
     }
 
     //Posición aleatoria en el centro de los cuadrados
@@ -79,7 +98,16 @@ public class GameManager : MonoBehaviour
     public void UpdateScore(int newPoints) //función para ganar puntos
     {
         score += newPoints; //nuevos puntos añadidos
-        scoreText.text = $"Score: {score}";
+        scoreText.text = $"Score: /n{score}";
     }
 
+    public void MinusLife()
+    {
+        lives--;
+        livesText.text = $"Lives: {lives}";
+        if(lives <= 0)
+        {
+            GameOver();
+        }
+    }
 }

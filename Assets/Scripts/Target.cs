@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class Target : MonoBehaviour
 {
-    public float lifeTime = 2f; //tiempo en el que desaparecerá el Target
+    private float lifeTime = 2f; //tiempo en el que desaparecerá el Target
+
     private GameManager gameManager;
+
     public int points; //puntos de los targets
     public GameObject explosionParticle;
     void Start()
@@ -18,12 +20,26 @@ public class Target : MonoBehaviour
     {
         if (!gameManager.isGameOver)
         {
-            if (gameObject.CompareTag("Bad")) //si hacemos click en una calavera morimos
+            if (gameObject.CompareTag("Bad")) //escudo
             {
-                gameManager.GameOver();
-            }else if (gameObject.CompareTag("Good"))
+                if (gameManager.hasPowerupShield)
+                {
+                    gameManager.hasPowerupShield = false;
+                }
+                else
+                {
+                    gameManager.MinusLife();
+                }
+            }
+            
+            else if (gameObject.CompareTag("Good"))
             {
-                gameManager.UpdateScore(points);
+                gameManager.UpdateScore(points); //se suman puntos
+            }
+
+            else if (gameObject.CompareTag("Shield"))
+            {
+                gameManager.hasPowerupShield = true;
             }
             Instantiate(explosionParticle, transform.position, explosionParticle.transform.rotation);
             Destroy(gameObject);
